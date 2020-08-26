@@ -25,6 +25,9 @@ module.exports = {
     inTransfer: 0.001,
     outTransfer: 0.001,
     registerClinic: 0,
+    initiatePatientRecord: 0,
+    approvedPatientRecord: 0,
+    authorizedPatientRecord: 0,
     defaultFee: 0
   }
 }

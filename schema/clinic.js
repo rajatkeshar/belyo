@@ -6,12 +6,12 @@ module.exports = {
   clinic: {
     type: 'object',
       properties: {
-        fname: {
+        fName: {
           type: "string",
           minLength: 1,
           maxLength: 100
         },
-        lname: {
+        lName: {
           type: "string",
           minLength: 1,
           maxLength: 100
@@ -26,8 +26,9 @@ module.exports = {
           maxLength: 256
         },
         phoneNo: {
+          type: "number",
           minLength: 10,
-          maxLength: 10
+          maxLength: 15
         },
         dob: {
           type: "string",
@@ -63,22 +64,6 @@ module.exports = {
           maxLength: 2
         }
       },
-      required: ['fname', 'lname', 'email', 'phoneNo', 'dob', 'aadhar', 'addressLine1', 'city', 'state', 'countryCode']
-  },
-  verifyBelShare: {
-    type: 'object',
-      properties: {
-        password: {
-          type: "string",
-          minLength: 1,
-          maxLength: 100
-        },
-        phoneNo: {
-          type: "number",
-          minLength: 10,
-          maxLength: 10
-        }
-      },
-      required: ['phoneNo', 'password']
+      required: ['fName', 'lName', 'email', 'phoneNo', 'dob', 'aadhar', 'addressLine1', 'city', 'state', 'countryCode']
   }
 };

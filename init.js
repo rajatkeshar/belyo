@@ -9,6 +9,21 @@ module.exports = async function () {
           type: TransactionTypes.REGISTER_CLINIC,
           name: "registerClinic",
           location: 'clinic.registerClinic'
+      },
+      initiatePatientRecord: {
+          type: TransactionTypes.INITIATE_PATIENT_RECORD,
+          name: "initiatePatientRecord",
+          location: 'patient.initiatePatientRecord'
+      },
+      authorizedPatientRecord: {
+          type: TransactionTypes.AUTHORIZED_PATIENT_RECORD,
+          name: "authorizedPatientRecord",
+          location: 'patient.authorizedPatientRecord'
+      },
+      approvedPatientRecord: {
+          type: TransactionTypes.APPROVED_PATIENT_RECORD,
+          name: "approvedPatientRecord",
+          location: 'patient.approvedPatientRecord'
       }
   }
   console.log("app: ", app.contract);

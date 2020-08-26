@@ -55,6 +55,10 @@
     "customCode": 4014,
     "message": "clinic already register"
   },
+  {
+    "customCode": 4015,
+    "message": "not authorized to process patient record"
+  }
 
   {
     "customCode": 3001,

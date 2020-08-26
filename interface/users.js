@@ -1,5 +1,4 @@
 var _ = require('lodash');
-var util = require("../utils/util");
 var auth = require("../utils/auth");
 var belriumJS = require('belrium-js');
 var aesUtil = require("../utils/aesUtil");
@@ -10,27 +9,31 @@ var constants = require('../utils/constants.js');
 var addressHelper = require('../utils/address.js');
 var z_schema = require('../utils/zschema-express.js');
 var TransactionTypes = require('../utils/transaction-types.js');
-const enum = ["superadmin", "subadmin", "clinicmaster", "clinicadmin", "issuer", "authorizer"];
+//const enum = ["superadmin", "subadmin", "clinicmaster", "clinicadmin", "issuer", "authorizer", "user"];
 
 app.route.put('/user',  async function (req) {
     req.query.dappName = app.config.dappName;
-    let data = auth.parseRequestToken(req.body.token);
-    let loginInfo = await apiCall.call(constants.CENTRAL_PROFILE_URL, "PUT", `/api/dapps/${constants.centralProfileDappId}/user/${req.params.token}`, data);
+    let loginInfo = await apiCall.call(constants.CENTRAL_PROFILE_URL, "POST", `/api/dapps/${constants.centralProfileDappId}/users/info`, {email: req.query.loginEmail, dappName: app.config.dappName});
+    let decryptedPassword = aesUtil.decrypt(loginInfo.password, constants.cipher.key);
     let validateRole = false;
-
+    
+    if(req.query.loginPassword !== decryptedPassword) return {customCode: 4007, message: "incorrect login email or password"};
     if(loginInfo.role == "superadmin") {
       validateRole = true;
     }
     if(loginInfo.role == "subadmin") {
-      validateRole = (req.body.role == "clinicmaster")? true: false;
+      validateRole = (req.query.role == "clinicmaster")? true: false;
     }
     if(loginInfo.role == "clinicmaster") {
-      validateRole = (req.body.role == "clinicadmin" || req.body.role == "issuer" || req.body.role == "authorizer")? true: false;
+      validateRole = (req.query.role == "clinicadmin" || req.query.role == "issuer" || req.query.role == "authorizer")? true: false;
     }
     if(loginInfo.role == "clinicadmin") {
-      validateRole = (req.body.role == "issuer" || req.body.role == "authorizer")? true: false;
+      validateRole = (req.query.role == "issuer" || req.query.role == "authorizer")? true: false;
     }
-    
+    if(loginInfo.role == "issuer") {
+      validateRole = (req.query.role == "user")? true: false;
+    }
+
     if(!validateRole) {
       return { customCode: 4012, message: "not authorized to add this role" };
     }
@@ -47,7 +50,6 @@ app.route.put('/user/:token',  async function (req) {
 app.route.post('/users/login',  async function (req) {
   req.query.dappName = app.config.dappName;
   let response = await apiCall.call(constants.CENTRAL_PROFILE_URL, "POST", `/api/dapps/${constants.centralProfileDappId}/users/login`, req.query);
-  response.token = auth.generateToken(req.query);
   return response;
 });
 

@@ -1,40 +1,33 @@
 module.exports = {
-    name: 'clinic',
+    name: 'clinics',
     fields: [
       {
-        name: 'fname',
+        name: 'fName',
         type: 'String',
         length: 256,
-        not_null: true,
         index: true,
       },
       {
-        name: 'lname',
+        name: 'lName',
         type: 'String',
         length: 256,
-        not_null: true,
         index: true,
       },
       {
         name: 'clinicName',
         type: 'String',
         length: 256,
-        not_null: true,
         index: true,
       },
       {
         name: 'email',
         type: 'String',
         length: 256,
-        not_null: true,
         index: true
       },
       {
         name: 'phoneNo',
-        type: 'Number',
-        length: 10,
-        not_null: true,
-        index: true
+        type: 'Number'
       },
       {
         name: 'dob',
@@ -86,6 +79,11 @@ module.exports = {
       {
         name: 'timestamp',
         type: 'Number'
+      },
+      {
+        name: 'transactionId',
+        length: 256,
+        type: "String"
       }
     ]
   }
