@@ -5,7 +5,7 @@ module.exports = {
   URL: "http://localhost:9305",
   BKBS_URL: "http://47.254.241.229:8080",
   CENTRAL_PROFILE_URL: "http://localhost:9305",
-  centralProfileDappId: "a06b64f4be75af4a73cbc0a1e7c30c5bb791efb6c3c6878f22cc34e25772bb39",
+  centralProfileDappId: "f9db4fbc74020544f10b840b85909375c6808a7baddff8b1d4ce65cbcac7205e",
   admin: {
     secret: "frozen hour curious thunder relief accuse soccer region resource marine juice chicken",
     countryCode: "IN"

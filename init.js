@@ -24,6 +24,11 @@ module.exports = async function () {
           type: TransactionTypes.APPROVED_PATIENT_RECORD,
           name: "approvedPatientRecord",
           location: 'patient.approvedPatientRecord'
+      },
+      mapClinicUser: {
+          type: TransactionTypes.MAP_USER,
+          name: "mapClinicUser",
+          location: 'clinic.mapClinicUser'
       }
   }
   console.log("app: ", app.contract);

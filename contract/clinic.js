@@ -20,5 +20,18 @@ module.exports = {
       timestamp: this.trs.timestamp,
       transactionId: this.trs.id
     });
+  },
+  mapClinicUser: async function(clinicId, loginEmail, userEmail, role) {
+    console.log("calling contract clinic: ", this);
+    app.sdb.lock('clinic.mapClinicUser@' + userEmail );
+    app.sdb.create('Clinicuser', {
+      clinicId: clinicId,
+      loginEmail: loginEmail,
+      userEmail: userEmail,
+      role: role,
+      cOn: new Date().getTime(),
+      mOn: new Date().getTime(),
+      transactionId: this.trs.id
+    });
   }
 }

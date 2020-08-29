@@ -57,7 +57,7 @@
   },
   {
     "customCode": 4015,
-    "message": "not authorized to process patient record"
+    "message": "only clinicmaster or clinicadmin can add clinic info"
   }
 
   {

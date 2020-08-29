@@ -14,24 +14,26 @@ var TransactionTypes = require('../utils/transaction-types.js');
 app.route.put('/user',  async function (req) {
     req.query.dappName = app.config.dappName;
     let loginInfo = await apiCall.call(constants.CENTRAL_PROFILE_URL, "POST", `/api/dapps/${constants.centralProfileDappId}/users/info`, {email: req.query.loginEmail, dappName: app.config.dappName});
+    if(loginInfo.customCode) return {customCode: 4005, message: "user does not exists"};
+
     let decryptedPassword = aesUtil.decrypt(loginInfo.password, constants.cipher.key);
     let validateRole = false;
-    
+
     if(req.query.loginPassword !== decryptedPassword) return {customCode: 4007, message: "incorrect login email or password"};
     if(loginInfo.role == "superadmin") {
       validateRole = true;
     }
-    if(loginInfo.role == "subadmin") {
+    if(loginInfo.role == "miniadmin") {
       validateRole = (req.query.role == "clinicmaster")? true: false;
     }
     if(loginInfo.role == "clinicmaster") {
-      validateRole = (req.query.role == "clinicadmin" || req.query.role == "issuer" || req.query.role == "authorizer")? true: false;
+      validateRole = (req.query.role == "clinicadmin" || req.query.role == "clinicauthorizer" || req.query.role == "clinicissuer")? true: false;
     }
     if(loginInfo.role == "clinicadmin") {
-      validateRole = (req.query.role == "issuer" || req.query.role == "authorizer")? true: false;
+      validateRole = (req.query.role == "clinicissuer" || req.query.role == "clinicauthorizer")? true: false;
     }
-    if(loginInfo.role == "issuer") {
-      validateRole = (req.query.role == "user")? true: false;
+    if(loginInfo.role == "clinicauthorizer") {
+      validateRole = (req.query.role == "patient")? true: false;
     }
 
     if(!validateRole) {
