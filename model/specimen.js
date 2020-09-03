@@ -1,17 +1,16 @@
 module.exports = {
-    name: 'patients',
+    name: 'specimens',
     fields: [
       {
-        name: 'fName',
+        name: 'clinicId',
         type: 'String',
         length: 256,
         index: true,
       },
       {
-        name: 'lName',
-        type: 'String',
-        length: 256,
-        index: true,
+        name: "certificateType",
+        type: "String",
+        length: 25
       },
       {
         name: 'issuerEmail',
@@ -24,39 +23,43 @@ module.exports = {
         length: 256
       },
       {
-        name: 'email',
+        name: 'patientEmail',
         type: 'String',
         length: 256
       },
       {
-        name: 'phoneNo',
-        type: 'Number',
-        length: 15,
-        index: true
+        name: "sampleId",
+        type: "String",
+        length: 256
       },
       {
-        name: 'dob',
+        name: "specimenType",
+        type: "String",
+        length: 256
+      },
+      {
+        name: 'specimenDate',
         type: 'String',
         length: 256
       },
       {
-        name: 'sampleCollected',
-        type: 'Boolean',
-        default: true
+        name: 'resultDate',
+        type: 'String',
+        length: 256
       },
       {
-        name: 'report',
+        name: 'status',
         type: 'String',
         length: 25,
-        default: "initiated",
-        enum: ["initiated", "pending", "authorized", "approved"]
+        default: "pending",
+        enum: ["initiated", "pending", "authorized", "issued", "rejected"]
       },
       {
         name: 'result',
         type: 'String',
         length: 25,
-        default: "pending",
-        enum: ["pending", "positive", "negative"]
+        default: "Quarantined",
+        enum: ["Quarantined", "Quarantined & Positive", "Quarantined & Positive", "Never Tested", "Self Isolated & Negative", "Self Isolated & Positive"]
       },
       {
         name: 'cOn',
@@ -64,10 +67,6 @@ module.exports = {
       },
       {
         name: 'mOn',
-        type: 'Number'
-      },
-      {
-        name: 'timestamp',
         type: 'Number'
       },
       {

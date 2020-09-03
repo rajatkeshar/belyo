@@ -10,10 +10,15 @@ module.exports = async function () {
           name: "registerClinic",
           location: 'clinic.registerClinic'
       },
-      initiatePatientRecord: {
-          type: TransactionTypes.INITIATE_PATIENT_RECORD,
-          name: "initiatePatientRecord",
-          location: 'patient.initiatePatientRecord'
+      initiateCovidCert: {
+          type: TransactionTypes.INITIATE_COVID_CERT,
+          name: "initiateCovidCert",
+          location: 'patient.initiateCovidCert'
+      },
+      initiateVaccineCert: {
+          type: TransactionTypes.INITIATE_VACCINE_CERT,
+          name: "initiateVaccineCert",
+          location: 'patient.initiateVaccineCert'
       },
       authorizedPatientRecord: {
           type: TransactionTypes.AUTHORIZED_PATIENT_RECORD,
@@ -29,6 +34,11 @@ module.exports = async function () {
           type: TransactionTypes.MAP_USER,
           name: "mapClinicUser",
           location: 'clinic.mapClinicUser'
+      },
+      mapUsersLevel: {
+          type: TransactionTypes.MAP_USER_LEVEL,
+          name: "mapUsersLevel",
+          location: 'clinic.mapUsersLevel'
       }
   }
   console.log("app: ", app.contract);

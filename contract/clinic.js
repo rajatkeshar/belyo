@@ -33,5 +33,19 @@ module.exports = {
       mOn: new Date().getTime(),
       transactionId: this.trs.id
     });
+  },
+  mapUsersLevel: async function(clinicId, userEmail, role, certificateType) {
+    console.log("calling contract clinic: ", this);
+    app.sdb.lock('clinic.mapUsersLevel@' + userEmail );
+    app.sdb.create('Level', {
+      clinicId: clinicId,
+      userEmail: userEmail,
+      role: role,
+      certificateType: certificateType,
+      level: (certificateType == "covid")? 1: 2,
+      cOn: new Date().getTime(),
+      mOn: new Date().getTime(),
+      transactionId: this.trs.id
+    });
   }
 }

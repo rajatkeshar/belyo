@@ -10,6 +10,7 @@ var schema = require('../schema/clinic.js');
 var addressHelper = require('../utils/address.js');
 var z_schema = require('../utils/zschema-express.js');
 var TransactionTypes = require('../utils/transaction-types.js');
+const CertificateType = ["covid", "vacination"];
 
 app.route.put('/clinic/register',  async function (req) {
     let validateSchema = await z_schema.validate(req.query, schema.clinic);
@@ -56,7 +57,7 @@ app.route.put('/clinic/map/users',  async function (req) {
     let userInfo = await apiCall.call(constants.CENTRAL_PROFILE_URL, "POST", `/api/dapps/${constants.centralProfileDappId}/users/info`, {email: req.query.loginEmail, dappName: app.config.dappName});
     if(userInfo.role === "clinicmaster" || userInfo.role === "clinicadmin") {
       let recipientUserInfo = await apiCall.call(constants.CENTRAL_PROFILE_URL, "POST", `/api/dapps/${constants.centralProfileDappId}/users/info`, {email: req.query.email, dappName: app.config.dappName});
-      if(recipientUserInfo.role == "clinicadmin" || recipientUserInfo.role == "clinicissuer" || recipientUserInfo.role == "clinicauthorizer") {
+      if(recipientUserInfo.role == "clinicmaster" || recipientUserInfo.role == "clinicissuer" || recipientUserInfo.role == "clinicauthorizer") {
         let checkMappingInfo = await app.model.ClinicUser.exists({ userEmail: req.query.email});
         if(checkMappingInfo) return { customCode: 1017, message: "user already registered"};
 
@@ -86,6 +87,49 @@ app.route.put('/clinic/map/users',  async function (req) {
       }
     } else {
       return { customCode: 4013, message: "not authorized to add clinic info" };
+    }
+});
+
+app.route.put('/clinic/map/levels',  async function (req) {
+    if(!_.includes(CertificateType, req.query.certificateType)) return {customCode: 4019, message: "invalid certificateType"};
+    let clinicsInfo = await app.model.Clinic.findOne({ condition: { transactionId: req.query.clinicId} });
+    if(!clinicsInfo) return { customCode: 4016, message: "clinic does not exists"};
+    let userInfo = await apiCall.call(constants.CENTRAL_PROFILE_URL, "POST", `/api/dapps/${constants.centralProfileDappId}/users/info`, {email: req.query.loginEmail, dappName: app.config.dappName});
+    if(userInfo.role === "clinicmaster" || userInfo.role === "clinicadmin") {
+      let recipientUserInfo = await apiCall.call(constants.CENTRAL_PROFILE_URL, "POST", `/api/dapps/${constants.centralProfileDappId}/users/info`, {email: req.query.email, dappName: app.config.dappName});
+      if(recipientUserInfo.role == "clinicissuer" || recipientUserInfo.role == "clinicauthorizer") {
+        // let checkMappingInfo = await app.model.ClinicUser.exists({clinicId: req.query.clinicId, userEmail: req.query.email});
+        // if(!checkMappingInfo) return { customCode: 1017, message: "user does not mapped with this clinic"};
+
+        let checkLevelInfo = await app.model.Level.exists({ userEmail: req.query.email, certificateType: req.query.certificateType});
+        if(checkLevelInfo) return { customCode: 1017, message: "user level info already registered"};
+
+        let options = {
+            fee: String(constants.fees.defaultFee * constants.fixedPoint),
+            type: TransactionTypes.MAP_USER_LEVEL,
+            args: JSON.stringify([req.query.clinicId, req.query.email, recipientUserInfo.role, req.query.certificateType])
+        };
+
+        let decryptedSecret = aesUtil.decrypt(userInfo.secret, constants.cipher.key);
+
+        let transaction = belriumJS.dapp.createInnerTransaction(options, decryptedSecret);
+        let dappId = util.getDappID();
+        let params = {
+            transaction: transaction
+        };
+
+        console.log("registerLevel data: ", params);
+        try {
+          let res = await httpCall.call('PUT', `/api/dapps/${dappId}/transactions/signed`, params);
+          return res;
+        } catch (e) {
+          return {customCode: 3001, message: "something went wrong!"}
+        }
+      } else {
+        return { customCode: 1018, message: "user can not be mapped" };
+      }
+    } else {
+      return { customCode: 4013, message: "not authorized to add level info" };
     }
 });
 
