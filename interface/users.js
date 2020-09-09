@@ -67,6 +67,12 @@ app.route.post('/users/auth/forgetPassword',  async function (req) {
   return response;
 });
 
+app.route.post('/users/auth/resetPassword',  async function (req) {
+  req.query.dappName = app.config.dappName;
+  let response = await apiCall.call(constants.CENTRAL_PROFILE_URL, "POST", `/api/dapps/${constants.centralProfileDappId}/users/auth/resetPassword`, req.query);
+  return response;
+});
+
 app.route.put('/users/auth/confirmPassword/:token',  async function (req) {
   let response = await apiCall.call(constants.CENTRAL_PROFILE_URL, "PUT", `/api/dapps/${constants.centralProfileDappId}/users/auth/confirmPassword/${req.params.token}`, req.query);
   return response;

@@ -34,18 +34,36 @@ module.exports = {
       transactionId: this.trs.id
     });
   },
-  mapUsersLevel: async function(clinicId, userEmail, role, certificateType) {
+  updateClinicMaster: async function(clinicId, email) {
     console.log("calling contract clinic: ", this);
-    app.sdb.lock('clinic.mapUsersLevel@' + userEmail );
-    app.sdb.create('Level', {
-      clinicId: clinicId,
-      userEmail: userEmail,
-      role: role,
-      certificateType: certificateType,
-      level: (certificateType == "covid")? 1: 2,
-      cOn: new Date().getTime(),
-      mOn: new Date().getTime(),
-      transactionId: this.trs.id
-    });
+    app.sdb.lock('clinic.updateClinicMaster@' + email );
+    app.sdb.update('Clinic', {email: email}, {transactionId: clinicId});
+  },
+  deleteClinic: async function(clinicId) {
+    console.log("calling contract clinic: ", this);
+    app.sdb.lock('clinic.deleteClinic@' + clinicId );
+    app.sdb.update('Clinic', {_deleted_: 1}, {transactionId: clinicId});
+  },
+  mapUsersLevel: async function(cId, iEmail, a1Email, a2Email, cType) {
+    console.log("calling contract clinic: ", this);
+    var exists = await app.model.Level.exists({ clinicId: cId, certificateType: cType});
+    if(exists) {
+      app.sdb.update('Level', {issuerEmail: iEmail}, {clinicId: cId, certificateType: cType});
+      app.sdb.update('Level', {authorizer1Email: a1Email}, {clinicId: cId, certificateType: cType});
+      app.sdb.update('Level', {authorizer1Email: a2Email}, {clinicId: cId, certificateType: cType});
+      app.sdb.update('Level', {mOn: new Date().getTime()}, {clinicId: cId, certificateType: cType});
+    } else {
+      app.sdb.create('Level', {
+        clinicId: cId,
+        issuerEmail: iEmail,
+        authorizer1Email: a1Email,
+        authorizer2Email: a2Email,
+        certificateType: cType,
+        level: (cType == "covid")? 1: 2,
+        cOn: new Date().getTime(),
+        mOn: new Date().getTime(),
+        transactionId: this.trs.id
+      });
+    }
   }
 }

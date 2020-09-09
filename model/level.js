@@ -8,15 +8,22 @@ module.exports = {
       index: true,
     },
     {
-      name: 'userEmail',
+      name: 'issuerEmail',
       type: 'String',
       length: 256,
       index: true
     },
     {
-      name: 'role',
+      name: 'authorizer1Email',
       type: 'String',
-      length: 256
+      length: 256,
+      index: true
+    },
+    {
+      name: 'authorizer2Email',
+      type: 'String',
+      length: 256,
+      index: true
     },
     {
       name: "certificateType",

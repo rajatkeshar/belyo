@@ -35,6 +35,16 @@ module.exports = async function () {
           name: "mapClinicUser",
           location: 'clinic.mapClinicUser'
       },
+      updateClinicMaster: {
+          type: TransactionTypes.UPDATE_CLINIC_MASTER,
+          name: "updateClinicMaster",
+          location: 'clinic.updateClinicMaster'
+      },
+      deleteClinic: {
+          type: TransactionTypes.DELETE_CLINIC,
+          name: "deleteClinic",
+          location: 'clinic.deleteClinic'
+      },
       mapUsersLevel: {
           type: TransactionTypes.MAP_USER_LEVEL,
           name: "mapUsersLevel",
