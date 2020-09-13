@@ -73,8 +73,8 @@ module.exports = {
         name: 'status',
         type: 'String',
         length: 25,
-        default: "approved",
-        enum: ["pending", "approved"]
+        default: "active",
+        enum: ["active", "inactive"]
       },
       {
         name: 'timestamp',

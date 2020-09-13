@@ -34,15 +34,26 @@ module.exports = {
       transactionId: this.trs.id
     });
   },
+  updateClinicUserStatus: async function(clinicId, uEmail, status) {
+    console.log("calling contract clinic: ", this);
+    app.sdb.lock('clinic.updateClinicUserStatus@' + clinicId );
+    app.sdb.update('Clinicuser', {status: status}, {clinicId: clinicId, userEmail: uEmail});
+  },
   updateClinicMaster: async function(clinicId, email) {
     console.log("calling contract clinic: ", this);
     app.sdb.lock('clinic.updateClinicMaster@' + email );
     app.sdb.update('Clinic', {email: email}, {transactionId: clinicId});
   },
-  deleteClinic: async function(clinicId) {
+  updateClinicStatus: async function(clinicId, status) {
     console.log("calling contract clinic: ", this);
-    app.sdb.lock('clinic.deleteClinic@' + clinicId );
-    app.sdb.update('Clinic', {_deleted_: 1}, {transactionId: clinicId});
+    app.sdb.lock('clinic.updateClinicStatus@' + clinicId );
+    app.sdb.update('Clinic', {status: status}, {transactionId: clinicId});
+    if(status === "inactive") {
+      //let clinicUsers = await app.model.ClinicUser.findAll({ condition: { clinicId: clinicId} });
+      //clinicUsers.forEach((users, i) => {
+        app.sdb.update('Clinicuser', {status: status}, {clinicId: clinicId});
+      //});
+    }
   },
   mapUsersLevel: async function(cId, iEmail, a1Email, a2Email, cType) {
     console.log("calling contract clinic: ", this);

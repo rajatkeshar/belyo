@@ -62,6 +62,11 @@ module.exports = {
           type: 'string',
           minLength: 2,
           maxLength: 2
+        },
+        status: {
+          type: "string",
+          default: "active",
+          enum: ["active", "inactive"]
         }
       },
       required: ['fName', 'lName', 'email', 'phoneNo', 'dob', 'aadhar', 'addressLine1', 'city', 'state', 'countryCode']

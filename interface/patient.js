@@ -21,8 +21,9 @@ app.route.put('/issuer/initiate/patient/record',  async function (req) {
       if(userInfo.role === "clinicissuer") {
         // let patientInfo = await apiCall.call(constants.CENTRAL_PROFILE_URL, "POST", `/api/dapps/${constants.centralProfileDappId}/users/info`, {email: req.query.email, dappName: app.config.dappName});
         // if(patientInfo.customCode) return { customCode: 4005, message: "user does not exists"};
-        let checkMappingInfo = await app.model.ClinicUser.exists({clinicId: req.query.clinicId, userEmail: userInfo.email});
-        if(!checkMappingInfo) return { customCode: 1017, message: "issuer not found for this clinic"};
+
+        var checkIssuerInfo = await app.model.Level.exists({ clinicId: req.query.clinicId, issuerEmail: userInfo.email, certificateType: req.query.certificateType});
+        if(!checkIssuerInfo) return { customCode: 1017, message: "issuer level not found for this clinic"};
 
         let options = {
             fee: String(constants.fees.defaultFee * constants.fixedPoint),
@@ -53,8 +54,8 @@ app.route.put('/issuer/initiate/patient/record',  async function (req) {
       if(userInfo.role === "clinicissuer") {
         // let patientInfo = await apiCall.call(constants.CENTRAL_PROFILE_URL, "POST", `/api/dapps/${constants.centralProfileDappId}/users/info`, {email: req.query.email, dappName: app.config.dappName});
         // if(patientInfo.customCode) return { customCode: 4005, message: "user does not exists"};
-        let checkMappingInfo = await app.model.ClinicUser.exists({clinicId: req.query.clinicId, userEmail: userInfo.email});
-        if(!checkMappingInfo) return { customCode: 1017, message: "issuer not found for this clinic"};
+        var checkIssuerInfo = await app.model.Level.exists({ clinicId: req.query.clinicId, issuerEmail: userInfo.email, certificateType: req.query.certificateType});
+        if(!checkIssuerInfo) return { customCode: 1017, message: "issuer not found for this clinic"};
 
         let options = {
             fee: String(constants.fees.defaultFee * constants.fixedPoint),
@@ -86,9 +87,12 @@ app.route.put('/authorizer/authorized/patient/record',  async function (req) {
     if(req.query.certificateType == "covid") {
       let userInfo = await apiCall.call(constants.CENTRAL_PROFILE_URL, "POST", `/api/dapps/${constants.centralProfileDappId}/users/info`, {email: req.query.loginEmail, dappName: app.config.dappName});
       if(userInfo.role === "clinicauthorizer") {
-        let checkMappingInfo = await app.model.ClinicUser.exists({clinicId: req.query.clinicId, userEmail: userInfo.email});
-        console.log("checkMappingInfo: ", checkMappingInfo);
-        if(!checkMappingInfo) return { customCode: 1017, message: "authorizer not found for this clinic"};
+        var checkAuthorizer1Info = await app.model.Level.exists({ clinicId: req.query.clinicId, authorizer1Email: userInfo.email, certificateType: req.query.certificateType});
+        if(!checkAuthorizer1Info) return { customCode: 1017, message: "authorizer level not found for this clinic"};
+
+        var checkcertificateId = await app.model.Specimen.exists({ transactionId: req.query.trsId, certificateType: req.query.certificateType});
+        if(!checkcertificateId) return { customCode: 1021, message: "trsId not found"};
+
         let options = {
             fee: String(constants.fees.defaultFee * constants.fixedPoint),
             type: TransactionTypes.AUTHORIZED_PATIENT_RECORD,
@@ -115,8 +119,12 @@ app.route.put('/authorizer/authorized/patient/record',  async function (req) {
     } else {
       let userInfo = await apiCall.call(constants.CENTRAL_PROFILE_URL, "POST", `/api/dapps/${constants.centralProfileDappId}/users/info`, {email: req.query.loginEmail, dappName: app.config.dappName});
       if(userInfo.role === "clinicauthorizer") {
-        let checkMappingInfo = await app.model.ClinicUser.exists({clinicId: req.query.clinicId, userEmail: userInfo.email});
-        if(!checkMappingInfo) return { customCode: 1017, message: "issuer not found for this clinic"};
+        var checkAuthorizer1Info = await app.model.Level.exists({ clinicId: req.query.clinicId, authorizer1Email: userInfo.email, certificateType: req.query.certificateType});
+        var checkAuthorizer2Info = await app.model.Level.exists({ clinicId: req.query.clinicId, authorizer2Email: userInfo.email, certificateType: req.query.certificateType});
+        if(!(checkAuthorizer1Info || checkAuthorizer2Info)) return { customCode: 1017, message: "authorizer level not found for this clinic"};
+
+        var checkcertificateId = await app.model.Vaccine.exists({ transactionId: req.query.trsId, certificateType: req.query.certificateType});
+        if(!checkcertificateId) return { customCode: 1021, message: "trsId not found"};
 
         let options = {
             fee: String(constants.fees.defaultFee * constants.fixedPoint),
@@ -147,8 +155,8 @@ app.route.put('/authorizer/authorized/patient/record',  async function (req) {
 app.route.put('/issuer/approved/patient/record',  async function (req) {
     let userInfo = await apiCall.call(constants.CENTRAL_PROFILE_URL, "POST", `/api/dapps/${constants.centralProfileDappId}/users/info`, {email: req.query.loginEmail, dappName: app.config.dappName});
     if(userInfo.role === "clinicissuer") {
-      let checkMappingInfo = await app.model.ClinicUser.exists({clinicId: req.query.clinicId, userEmail: userInfo.email});
-      if(!checkMappingInfo) return { customCode: 1017, message: "issuer not found for this clinic"};
+      var checkIssuerInfo = await app.model.Level.exists({ clinicId: req.query.clinicId, issuerEmail: userInfo.email, certificateType: req.query.certificateType});
+      if(!checkIssuerInfo) return { customCode: 1017, message: "issuer level not found for this clinic"};
 
       let options = {
           fee: String(constants.fees.defaultFee * constants.fixedPoint),
@@ -175,24 +183,19 @@ app.route.put('/issuer/approved/patient/record',  async function (req) {
     }
 });
 
-app.route.post('/patient/record',  async function (req) {
+app.route.post('/patient/record/status',  async function (req) {
+    if(!_.includes(CertificateType, req.query.certificateType)) return {customCode: 4019, message: "invalid certificateType"};
     let offset =  req.query.offset || 0;
     let limit = req.query.limit || 20;
-    let condition = {};
-    if(req.query.reportStatus) {
-      condition.status = req.query.status;
-    }
-    if(req.query.email) {
-      condition.email = req.query.email;
-    }
-    if(req.query.issuerEmail) {
-      condition.issuerEmail = req.query.issuerEmail;
-    }
-    if(req.query.authorizerEmail) {
-      condition.authorizerEmail = req.query.authorizerEmail;
-    }
-    let count = await app.model.Patient.count(condition);
-    let patientInfo = await app.model.Patient.findAll({ condition: condition, offset: offset, limit: limit });
+    let condition = {clinicId: req.query.clinicId, certificateType: req.query.certificateType};
 
-    return {data: patientInfo, total: count};
+    if(req.query.certificateType === "covid") {
+      let count = await app.model.Specimen.count(condition);
+      let res = await app.model.Specimen.findAll({ condition: condition, offset: offset, limit: limit });
+      return {data: res, total: count};
+    } else {
+      let count = await app.model.Vaccine.count(condition);
+      let res = await app.model.Vaccine.findAll({ condition: condition, offset: offset, limit: limit });
+      return {data: res, total: count};
+    }
 });

@@ -25,6 +25,13 @@ module.exports = {
         length: 256
       },
       {
+        name: 'status',
+        type: 'String',
+        length: 25,
+        default: "active",
+        enum: ["active", "inactive"]
+      },
+      {
         name: 'cOn',
         type: 'Number'
       },
