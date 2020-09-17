@@ -2,18 +2,6 @@ module.exports = {
     name: 'clinics',
     fields: [
       {
-        name: 'fName',
-        type: 'String',
-        length: 256,
-        index: true,
-      },
-      {
-        name: 'lName',
-        type: 'String',
-        length: 256,
-        index: true,
-      },
-      {
         name: 'clinicName',
         type: 'String',
         length: 256,
@@ -30,12 +18,7 @@ module.exports = {
         type: 'Number'
       },
       {
-        name: 'dob',
-        type: 'String',
-        length: 256
-      },
-      {
-        name: 'aadhar',
+        name: 'identity',
         type: 'String',
         length: 256
       },

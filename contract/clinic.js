@@ -1,22 +1,19 @@
 var constants = require('../utils/constants.js');
 module.exports = {
-  registerClinic: async function(fName, lName, clinicName, email, phoneNo, dob, aadhar, addressLine1, addressLine2, city, pinCode, state, countryCode) {
+  registerClinic: async function(cName, email, pNo, identity, aLine1, aLine2, city, pCode, state, cCode) {
     console.log("calling contract clinic: ", this);
     app.sdb.lock('clinic.registerClinic@' + email);
     app.sdb.create('Clinic', {
-      fName: fName,
-      lName: lName,
-      clinicName: clinicName,
+      clinicName: cName,
       email: email,
-      phoneNo: phoneNo,
-      dob: dob,
-      aadhar: aadhar,
-      addressLine1: addressLine1,
-      addressLine2: addressLine2,
+      phoneNo: pNo,
+      identity: identity,
+      addressLine1: aLine1,
+      addressLine2: aLine2,
       city: city,
-      pinCode: pinCode,
+      pinCode: pCode,
       state: state,
-      countryCode: countryCode,
+      countryCode: cCode,
       timestamp: this.trs.timestamp,
       transactionId: this.trs.id
     });
@@ -29,6 +26,7 @@ module.exports = {
       loginEmail: loginEmail,
       userEmail: userEmail,
       role: role,
+      status: "active",
       cOn: new Date().getTime(),
       mOn: new Date().getTime(),
       transactionId: this.trs.id

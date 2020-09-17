@@ -16,10 +16,10 @@ app.route.put('/user',  async function (req) {
     let loginInfo = await apiCall.call(constants.CENTRAL_PROFILE_URL, "POST", `/api/dapps/${constants.centralProfileDappId}/users/info`, {email: req.query.loginEmail, dappName: app.config.dappName});
     if(loginInfo.customCode) return {customCode: 4005, message: "user does not exists"};
 
-    let decryptedPassword = aesUtil.decrypt(loginInfo.password, constants.cipher.key);
-    let validateRole = false;
-
-    if(req.query.loginPassword !== decryptedPassword) return {customCode: 4007, message: "incorrect login email or password"};
+    // let decryptedPassword = aesUtil.decrypt(loginInfo.password, constants.cipher.key);
+    // let validateRole = false;
+    //
+    // if(req.query.loginPassword !== decryptedPassword) return {customCode: 4007, message: "incorrect login email or password"};
     if(loginInfo.role == "superadmin") {
       validateRole = true;
     }

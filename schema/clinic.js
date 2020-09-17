@@ -6,16 +6,6 @@ module.exports = {
   clinic: {
     type: 'object',
       properties: {
-        fName: {
-          type: "string",
-          minLength: 1,
-          maxLength: 100
-        },
-        lName: {
-          type: "string",
-          minLength: 1,
-          maxLength: 100
-        },
         clinicName: {
           type: "string",
           minLength: 1,
@@ -30,11 +20,7 @@ module.exports = {
           minLength: 10,
           maxLength: 15
         },
-        dob: {
-          type: "string",
-          maxLength: 256
-        },
-        aadhar: {
+        identity: {
           type: "string",
           maxLength: 256
         },
@@ -69,6 +55,6 @@ module.exports = {
           enum: ["active", "inactive"]
         }
       },
-      required: ['fName', 'lName', 'email', 'phoneNo', 'dob', 'aadhar', 'addressLine1', 'city', 'state', 'countryCode']
+      required: ['email', 'phoneNo']
   }
 };
