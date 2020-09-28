@@ -61,10 +61,10 @@ app.route.put('/clinic/register',  async function (req) {
           return {customCode: 3001, message: "something went wrong!"}
         }
       } else {
-        return { customCode: 1015, message: "incorrect clinic master role" };
+        return { customCode: 1013, message: "incorrect recipient user role: " +  recipientUserInfo.role};
       }
     } else {
-      return { customCode: 4013, message: "not authorized to add clinic info" };
+      return { customCode: 4015, message: "incorrect user role to process clinic info" };
     }
 });
 
@@ -95,10 +95,10 @@ app.route.put('/clinic/update/clinicmaster',  async function (req) {
           return {customCode: 3001, message: "something went wrong!"}
         }
       } else {
-        return { customCode: 1018, message: "user can not be mapped this role: " + recipientUserInfo.role };
+        return { customCode: 1013, message: "incorrect recipient user role: " +  recipientUserInfo.role };
       }
     } else {
-      return { customCode: 4013, message: "not authorized to add clinic info" };
+      return { customCode: 4015, message: "incorrect user role to process clinic info" };
     }
 });
 
@@ -110,7 +110,7 @@ app.route.put('/clinic/map/users',  async function (req) {
       let recipientUserInfo = await apiCall.call(constants.CENTRAL_PROFILE_URL, "POST", `/api/dapps/${constants.centralProfileDappId}/users/info`, {email: req.query.email, dappName: app.config.dappName});
       if(recipientUserInfo.role == "clinicmaster" || recipientUserInfo.role == "clinicissuer" || recipientUserInfo.role == "clinicauthorizer") {
         let checkMappingInfo = await app.model.ClinicUser.exists({ userEmail: req.query.email});
-        if(checkMappingInfo) return { customCode: 1017, message: "user already registered"};
+        if(checkMappingInfo) return { customCode: 4010, message: "user already registered"};
 
         let options = {
             fee: String(constants.fees.defaultFee * constants.fixedPoint),
@@ -134,15 +134,15 @@ app.route.put('/clinic/map/users',  async function (req) {
           return {customCode: 3001, message: "something went wrong!"}
         }
       } else {
-        return { customCode: 1018, message: "user can not be mapped this role: " + recipientUserInfo.role };
+        return { customCode: 1013, message: "incorrect recipient user role: " + recipientUserInfo.role };
       }
     } else {
-      return { customCode: 4013, message: "not authorized to add clinic info" };
+      return { customCode: 4015, message: "incorrect user role to process clinic info" };
     }
 });
 
 app.route.put('/clinic/update/users/status',  async function (req) {
-    if(!_.includes(ClinicStatus, req.query.status)) return {customCode: 4019, message: "invalid status"};
+    if(!_.includes(ClinicStatus, req.query.status)) return {customCode: 4022, message: "invalid status"};
     let clinicsInfo = await app.model.Clinic.findOne({ condition: { transactionId: req.query.clinicId} });
     if(!clinicsInfo) return { customCode: 4016, message: "clinic does not exists"};
     if(clinicsInfo.status === "inactive" && req.query.status === "active") return {customCode: 4020, message: "clinic is inactive"};
@@ -152,7 +152,7 @@ app.route.put('/clinic/update/users/status',  async function (req) {
       let recipientUserInfo = await apiCall.call(constants.CENTRAL_PROFILE_URL, "POST", `/api/dapps/${constants.centralProfileDappId}/users/info`, {email: req.query.email, dappName: app.config.dappName});
 
       let checkMappingInfo = await app.model.ClinicUser.exists({ userEmail: req.query.userEmail});
-      if(!checkMappingInfo) return { customCode: 1017, message: "user is not the member of clinic"};
+      if(!checkMappingInfo) return { customCode: 4017, message: "user is not the member of clinic"};
 
       let options = {
           fee: String(constants.fees.defaultFee * constants.fixedPoint),
@@ -174,12 +174,12 @@ app.route.put('/clinic/update/users/status',  async function (req) {
         return {customCode: 3001, message: "something went wrong!"}
       }
     } else {
-      return { customCode: 4013, message: "not authorized to add clinic info" };
+      return { customCode: 4015, message: "incorrect user role to process clinic info" };
     }
 });
 
 app.route.put('/clinic/update/status/:clinicId',  async function (req) {
-    if(!_.includes(ClinicStatus, req.query.status)) return {customCode: 4019, message: "invalid status"};
+    if(!_.includes(ClinicStatus, req.query.status)) return {customCode: 4022, message: "invalid status"};
     let clinicsInfo = await app.model.Clinic.findOne({ condition: { transactionId: req.params.clinicId} });
     if(!clinicsInfo) return { customCode: 4016, message: "clinic does not exists"};
     let userInfo = await apiCall.call(constants.CENTRAL_PROFILE_URL, "POST", `/api/dapps/${constants.centralProfileDappId}/users/info`, {email: req.query.loginEmail, dappName: app.config.dappName});
@@ -204,7 +204,7 @@ app.route.put('/clinic/update/status/:clinicId',  async function (req) {
           return {customCode: 3001, message: "something went wrong!"}
         }
     } else {
-      return { customCode: 4013, message: "not authorized to update clinic status" };
+      return { customCode: 4013, message: "incorrect user role to process clinic info" };
     }
 });
 
@@ -216,11 +216,11 @@ app.route.put('/clinic/map/auth/levels',  async function (req) {
     if(userInfo.role === "clinicmaster" || userInfo.role === "clinicadmin") {
       if(req.query.certificateType === "covid") {
         var checkMappingInfo = await app.model.ClinicUser.exists({clinicId: req.query.clinicId, userEmail: req.query.issuerEmail, userEmail: req.query.authorizer1Email});
-        if(!checkMappingInfo) return { customCode: 1017, message: "users does satisfying clinic users role"};
+        if(!checkMappingInfo) return { customCode: 4021, message: "users does satisfying clinic user role"};
       }
       if(req.query.certificateType === "vaccination") {
         var checkMappingInfo = await app.model.ClinicUser.exists({clinicId: req.query.clinicId, userEmail: req.query.issuerEmail, userEmail: req.query.authorizer1Email, userEmail: req.query.authorizer2Email});
-        if(!checkMappingInfo) return { customCode: 1017, message: "users does satisfying clinic users role"};
+        if(!checkMappingInfo) return { customCode: 4021, message: "users does satisfying clinic user role"};
       }
 
       req.query.authorizer2Email = (req.query.authorizer2Email)? req.query.authorizer2Email: null;
@@ -244,7 +244,7 @@ app.route.put('/clinic/map/auth/levels',  async function (req) {
         return {customCode: 3001, message: "something went wrong!"}
       }
     } else {
-      return { customCode: 4013, message: "not authorized to add level info" };
+      return { customCode: 4013, message: "incorrect user role to process clinic info" };
     }
 });
 

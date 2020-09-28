@@ -49,16 +49,44 @@
   },
   {
     "customCode": 4013,
-    "message": "not authorized to add clinic info"
+    "message": "incorrect recipient user role: "
   },
   {
     "customCode": 4014,
     "message": "clinic already register"
   },
   {
+    "customCode": 4016,
+    "message": "clinic does not exists"
+  },
+  {
     "customCode": 4015,
-    "message": "only clinicmaster or clinicadmin can add clinic info"
-  }
+    "message": "incorrect user role to process clinic info"
+  },
+  {
+    "customCode": 4017,
+    "message": "user is not the member of clinic"
+  },
+  {
+    "customCode": 4019,
+    "message": "invalid certificateType"
+  },
+  {
+    "customCode": 4020,
+    "message": "clinic is inactive"
+  },
+  {
+    "customCode": 4021,
+    "message": "users does satisfying clinic user role"
+  },
+  {
+    "customCode": 4022,
+    "message": "invalid status"
+  },
+  {
+    "customCode": 4023,
+    "message": "certificate not found"
+  },
 
   {
     "customCode": 3001,

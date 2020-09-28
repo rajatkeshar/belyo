@@ -23,7 +23,7 @@ app.route.put('/issuer/initiate/patient/record',  async function (req) {
         // if(patientInfo.customCode) return { customCode: 4005, message: "user does not exists"};
 
         var checkIssuerInfo = await app.model.Level.exists({ clinicId: req.query.clinicId, issuerEmail: userInfo.email, certificateType: req.query.certificateType});
-        if(!checkIssuerInfo) return { customCode: 1017, message: "issuer level not found for this clinic"};
+        if(!checkIssuerInfo) return { customCode: 4017, message: "issuer level not found for this clinic"};
 
         let options = {
             fee: String(constants.fees.defaultFee * constants.fixedPoint),
@@ -46,7 +46,7 @@ app.route.put('/issuer/initiate/patient/record',  async function (req) {
           return {customCode: 3001, message: "something went wrong!"}
         }
       } else {
-        return { customCode: 4014, message: "not authorized to process patient record" };
+        return { customCode: 4013, message: "incorrect user role to process patient info" };
       }
     } else {
       let validateSchema = await z_schema.validate(req.query, vaccineSchema.vaccine);
@@ -55,7 +55,7 @@ app.route.put('/issuer/initiate/patient/record',  async function (req) {
         // let patientInfo = await apiCall.call(constants.CENTRAL_PROFILE_URL, "POST", `/api/dapps/${constants.centralProfileDappId}/users/info`, {email: req.query.email, dappName: app.config.dappName});
         // if(patientInfo.customCode) return { customCode: 4005, message: "user does not exists"};
         var checkIssuerInfo = await app.model.Level.exists({ clinicId: req.query.clinicId, issuerEmail: userInfo.email, certificateType: req.query.certificateType});
-        if(!checkIssuerInfo) return { customCode: 1017, message: "issuer not found for this clinic"};
+        if(!checkIssuerInfo) return { customCode: 4017, message: "issuer level not found for this clinic"};
 
         let options = {
             fee: String(constants.fees.defaultFee * constants.fixedPoint),
@@ -78,7 +78,7 @@ app.route.put('/issuer/initiate/patient/record',  async function (req) {
           return {customCode: 3001, message: "something went wrong!"}
         }
       } else {
-        return { customCode: 4014, message: "not authorized to process patient record" };
+        return { customCode: 4013, message: "incorrect user role to process patient info" };
       }
     }
 });
@@ -88,10 +88,10 @@ app.route.put('/authorizer/authorized/patient/record',  async function (req) {
       let userInfo = await apiCall.call(constants.CENTRAL_PROFILE_URL, "POST", `/api/dapps/${constants.centralProfileDappId}/users/info`, {email: req.query.loginEmail, dappName: app.config.dappName});
       if(userInfo.role === "clinicauthorizer") {
         var checkAuthorizer1Info = await app.model.Level.exists({ clinicId: req.query.clinicId, authorizer1Email: userInfo.email, certificateType: req.query.certificateType});
-        if(!checkAuthorizer1Info) return { customCode: 1017, message: "authorizer level not found for this clinic"};
+        if(!checkAuthorizer1Info) return { customCode: 4017, message: "authorizer level not found for this clinic"};
 
         var checkcertificateId = await app.model.Specimen.exists({ transactionId: req.query.trsId, certificateType: req.query.certificateType});
-        if(!checkcertificateId) return { customCode: 1021, message: "trsId not found"};
+        if(!checkcertificateId) return { customCode: 4023, message: "certificate not found"};
 
         let options = {
             fee: String(constants.fees.defaultFee * constants.fixedPoint),
@@ -114,7 +114,7 @@ app.route.put('/authorizer/authorized/patient/record',  async function (req) {
           return {customCode: 3001, message: "something went wrong!"}
         }
       } else {
-        return { customCode: 4014, message: "not authorized to process patient record" };
+        return { customCode: 4013, message: "incorrect user role to process patient info" };
       }
     } else {
       let userInfo = await apiCall.call(constants.CENTRAL_PROFILE_URL, "POST", `/api/dapps/${constants.centralProfileDappId}/users/info`, {email: req.query.loginEmail, dappName: app.config.dappName});
@@ -124,7 +124,7 @@ app.route.put('/authorizer/authorized/patient/record',  async function (req) {
         if(!(checkAuthorizer1Info || checkAuthorizer2Info)) return { customCode: 1017, message: "authorizer level not found for this clinic"};
 
         var checkcertificateId = await app.model.Vaccine.exists({ transactionId: req.query.trsId, certificateType: req.query.certificateType});
-        if(!checkcertificateId) return { customCode: 1021, message: "trsId not found"};
+        if(!checkcertificateId) return { customCode: 4023, message: "certificate not found"};
 
         let options = {
             fee: String(constants.fees.defaultFee * constants.fixedPoint),
@@ -147,7 +147,7 @@ app.route.put('/authorizer/authorized/patient/record',  async function (req) {
           return {customCode: 3001, message: "something went wrong!"}
         }
       } else {
-        return { customCode: 4014, message: "not authorized to process patient record" };
+        return { customCode: 4013, message: "incorrect user role to process patient info" };
       }
     }
 });
@@ -156,7 +156,7 @@ app.route.put('/issuer/approved/patient/record',  async function (req) {
     let userInfo = await apiCall.call(constants.CENTRAL_PROFILE_URL, "POST", `/api/dapps/${constants.centralProfileDappId}/users/info`, {email: req.query.loginEmail, dappName: app.config.dappName});
     if(userInfo.role === "clinicissuer") {
       var checkIssuerInfo = await app.model.Level.exists({ clinicId: req.query.clinicId, issuerEmail: userInfo.email, certificateType: req.query.certificateType});
-      if(!checkIssuerInfo) return { customCode: 1017, message: "issuer level not found for this clinic"};
+      if(!checkIssuerInfo) return { customCode: 4017, message: "issuer level not found for this clinic"};
 
       let options = {
           fee: String(constants.fees.defaultFee * constants.fixedPoint),
@@ -179,7 +179,7 @@ app.route.put('/issuer/approved/patient/record',  async function (req) {
         return {customCode: 3001, message: "something went wrong!"}
       }
     } else {
-      return { customCode: 4014, message: "not authorized to process patient record" };
+      return { customCode: 4013, message: "incorrect user role to process patient info" };
     }
 });
 

@@ -59,7 +59,7 @@ module.exports = {
     if(exists) {
       app.sdb.update('Level', {issuerEmail: iEmail}, {clinicId: cId, certificateType: cType});
       app.sdb.update('Level', {authorizer1Email: a1Email}, {clinicId: cId, certificateType: cType});
-      app.sdb.update('Level', {authorizer1Email: a2Email}, {clinicId: cId, certificateType: cType});
+      app.sdb.update('Level', {authorizer2Email: a2Email}, {clinicId: cId, certificateType: cType});
       app.sdb.update('Level', {mOn: new Date().getTime()}, {clinicId: cId, certificateType: cType});
     } else {
       app.sdb.create('Level', {
