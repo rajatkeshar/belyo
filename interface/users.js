@@ -17,7 +17,7 @@ app.route.put('/user',  async function (req) {
     if(loginInfo.customCode) return {customCode: 4005, message: "user does not exists"};
 
     // let decryptedPassword = aesUtil.decrypt(loginInfo.password, constants.cipher.key);
-    // let validateRole = false;
+    let validateRole = false;
     //
     // if(req.query.loginPassword !== decryptedPassword) return {customCode: 4007, message: "incorrect login email or password"};
     if(loginInfo.role == "superadmin") {
