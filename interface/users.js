@@ -44,6 +44,15 @@ app.route.put('/user',  async function (req) {
     return response;
 })
 
+app.route.put('/user/update',  async function (req) {
+  req.query.dappName = app.config.dappName;
+  let loginInfo = await apiCall.call(constants.CENTRAL_PROFILE_URL, "POST", `/api/dapps/${constants.centralProfileDappId}/users/info`, {email: req.query.loginEmail, dappName: app.config.dappName});
+  if(loginInfo.customCode) return {customCode: 4005, message: "user does not exists"};
+
+  let response = await apiCall.call(constants.CENTRAL_PROFILE_URL, "PUT", `/api/dapps/${constants.centralProfileDappId}/user/update`, req.query);
+  return response;
+});
+
 app.route.put('/user/:token',  async function (req) {
     let response = await apiCall.call(constants.CENTRAL_PROFILE_URL, "PUT", `/api/dapps/${constants.centralProfileDappId}/user/${req.params.token}`, req.query);
     return response;
